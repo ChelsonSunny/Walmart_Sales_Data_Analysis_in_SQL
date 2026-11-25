@@ -116,5 +116,28 @@ ORDER BY Cost_of_Goods_Sold DESC
 -- Which product line had the largest revenue?
 
 
+SELECT Branch,
+	   SUM(Total) as Total_Revenue
+FROM walmartsalesData
+GROUP BY Branch
+HAVING SUM(Total) > (SELECT AVG(quantity) FROM walmartsalesdata)
 
-                
+-- What is the most common product line by gender?
+
+SELECT Gender, 
+		Product_Line,
+        COUNT(Gender) AS cnt
+FROM walmartsalesdata
+GROUP BY Gender, Product_Line
+ORDER BY cnt DESC
+
+-- What is the average rating of each product line?
+
+SELECT Product_Line,
+	   ROUND(AVG(Rating),2)AS Rating
+FROM walmartsalesdata
+GROUP BY Product_Line
+ORDER BY Rating DESC
+
+-- SALES QUESTIONS
+
