@@ -11,11 +11,11 @@ FROM walmartsalesdata
 -- Displaying the Time_of_day in a new column in accordance to the Time presented in the column
 
 
-SELECT Time, (CASE WHEN 'Time' BETWEEN "00:00:00" AND "12:00:00" THEN "Morning"
-				   WHEN 'Time' BETWEEN "12:01:00" AND "16:00:00" THEN "Afternoon"
-		           ELSE "EVENING"
-				   END)
-                AS Time_of_data
+SELECT Time,
+		CASE WHEN Time BETWEEN '00:00:00' AND '12:00:00' THEN 'Morning'
+			 WHEN Time BETWEEN "12:01:00" AND "16:00:00" THEN "Afternoon"
+		           ELSE 'Evening'
+				   END AS Time_of_date
 FROM walmartsalesdata;
 
 
@@ -26,11 +26,10 @@ ALTER TABLE walmartsalesdata ADD COLUMN time_of_day VARCHAR(20);
 -- Updating the details
 
 UPDATE walmartsalesdata
-	SET time_of_day = (CASE 
-				WHEN 'Time' BETWEEN "00:00:00" AND "12:00:00" THEN "Morning"
-				WHEN 'Time' BETWEEN "12:01:00" AND "16:00:00" THEN "Afternoon"
-                ELSE "EVENING"
-                END )
+	SET time_of_day = (
+		CASE WHEN Time BETWEEN '00:00:00' AND '12:00:00' THEN 'Morning'
+			 WHEN Time BETWEEN "12:01:00" AND "16:00:00" THEN "Afternoon"
+			 ELSE 'Evening' END )
 
 -- ----------------------------------------------------------------------------------------
 
@@ -115,6 +114,32 @@ ORDER BY Cost_of_Goods_Sold DESC
 
 -- Which product line had the largest revenue?
 
+SELECT Product_Line,
+	   SUM(Total) as Total_Revenue
+FROM walmartsalesdata
+GROUP BY Product_line
+ORDER BY Total_Revenue DESC LIMIT 1
+
+-- What is the city with the largest revenue?
+
+SELECT City,
+	   Branch,
+	   SUM(Total) as Total_Revenue
+FROM walmartsalesdata
+GROUP BY City,Branch
+ORDER BY Total_Revenue DESC 
+
+
+-- What product line had the largest VAT?
+
+
+-- SELECT Product_line,
+-- 	   AVG(VAT) AS Avg_tax
+-- FROM walmartsalesdata
+-- GROUP BY Product_line
+
+
+-- Which branch sold more products than average product sold?
 
 SELECT Branch,
 	   SUM(Total) as Total_Revenue
@@ -141,3 +166,38 @@ ORDER BY Rating DESC
 
 -- SALES QUESTIONS
 
+-- Number of sales made in each time of the day per weekday
+
+SELECT time_of_day,
+	  COUNT(*) AS total_number_of_sales
+FROM walmartsalesdata
+WHERE Day_of_the_Week = "Sunday"
+GROUP BY time_of_day
+ORDER BY total_number_of_sales DESC
+
+-- Which of the customer types brings the most revenue?
+
+SELECT Customer_type,
+	   ROUND(SUM(Total), 2) as Total_Amount
+FROM walmartsalesdata
+GROUP BY Customer_type 
+
+-- Which city has the largest tax percent/ VAT (**Value Added Tax**)?
+
+SELECT city,
+	   AVG(VAT) as VAT
+FROM walmartsalesdata
+GROUP BY city
+ORDER BY VAT DESC;
+
+-- Which customer type pays the most in VAT?
+
+
+SELECT Customer_type,
+	   AVG(VAT) as VAT
+FROM walmartsalesdata
+GROUP BY Customer_type
+ORDER BY VAT DESC; 
+
+
+-- CUSTOMER QUESTION
